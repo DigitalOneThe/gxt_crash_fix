@@ -4,10 +4,13 @@
 typedef void(__cdecl* TRAMPOLINE_FUNC)();
 TRAMPOLINE_FUNC FixGxtCrash_t = nullptr;
 
-const char invalid_text_1[] = "~k~~SWITCH_DEBUG_CAM_ON~";
-const char invalid_text_2[] = "~k~~TAKE_SCREEN_SHOT~";
-const char invalid_text_3[] = "~k~~KYEMAN~";
-
+// Данные
+const char* invalid_strings[] = {
+    "~k~~SWITCH_DEBUG_CAM_ON~",
+    "~k~~TAKE_SCREEN_SHOT~",
+    "~k~~KYEMAN~"
+};
+const int NUM_INVALID_STRINGS = sizeof(invalid_strings) / sizeof(invalid_strings[0]);
 constexpr uintptr_t FixGxtCrash_Addr = 0x69DB54;
 
 bool InitializeMinHook() {
@@ -23,37 +26,35 @@ static void __declspec(naked) HOOK_FixGxtCrash() {
         push esi
         push edi
         push ecx
+        push ebx
 
         mov esi, ecx
-
         test ecx, ecx
         jz invalid
 
-        mov edi, offset invalid_text_1
-        call strcmp_fix
-        cmp eax, 0
-        je invalid
+        mov ebx, offset invalid_strings
+        mov ecx, NUM_INVALID_STRINGS
 
-        mov edi, offset invalid_text_2
+    check_loop:
+        mov edi, [ebx]
         call strcmp_fix
-        cmp eax, 0
-        je invalid
+        test eax, eax
+        jz invalid
+        
+        add ebx, 4
+        loop check_loop
 
-        mov edi, offset invalid_text_3
-        call strcmp_fix
-        cmp eax, 0
-        je invalid
-
+        pop ebx
         pop ecx
         pop edi
         pop esi
         jmp[FixGxtCrash_t]
 
     invalid:
+        pop ebx
         pop ecx
         pop edi
         pop esi
-        //xor eax, eax
         retn
 
     strcmp_fix:
