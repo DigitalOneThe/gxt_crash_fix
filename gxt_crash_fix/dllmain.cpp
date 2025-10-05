@@ -4,19 +4,6 @@
 typedef void(__cdecl* TRAMPOLINE_FUNC)();
 TRAMPOLINE_FUNC FixGxtCrash_t = nullptr;
 
-char* text = nullptr;
-
-// Данные
-const char* invalid_strings[] = {
-    "~k~~SWITCH_DEBUG_CAM_ON~",
-    "~k~~TAKE_SCREEN_SHOT~",
-    "~k~~KYEMAN~",
-    "~k~~HBTAKE_SCREEN_SHOT~",
-    "~k~~TOGGLE_DPAD~",
-    "~k~~NETWORK_TALK~",
-    "~k~~SHOW_MOUSE_POINTER_TOGGLE~"
-};
-const int NUM_INVALID_STRINGS = sizeof(invalid_strings) / sizeof(invalid_strings[0]);
 constexpr uintptr_t FixGxtCrash_Addr = 0x69DB54;
 
 bool InitializeMinHook() {
