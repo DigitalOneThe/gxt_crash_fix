@@ -4,6 +4,8 @@
 typedef void(__cdecl* TRAMPOLINE_FUNC)();
 TRAMPOLINE_FUNC FixGxtCrash_t = nullptr;
 
+char* text = nullptr;
+
 // Данные
 const char* invalid_strings[] = {
     "~k~~SWITCH_DEBUG_CAM_ON~",
@@ -21,7 +23,7 @@ bool InitializeMinHook() {
     return true;
 }
 
-static void __declspec(naked) HOOK_FixGxtCrash() {
+void __declspec(naked) HOOK_FixGxtCrash() {
     __asm {
         push esi
         push edi
@@ -29,20 +31,10 @@ static void __declspec(naked) HOOK_FixGxtCrash() {
         push ebx
 
         mov esi, ecx
+        mov text, esi
+
         test ecx, ecx
         jz invalid
-
-        mov ebx, offset invalid_strings
-        mov ecx, NUM_INVALID_STRINGS
-
-    check_loop:
-        mov edi, [ebx]
-        call strcmp_fix
-        test eax, eax
-        jz invalid
-        
-        add ebx, 4
-        loop check_loop
 
         pop ebx
         pop ecx
@@ -55,33 +47,6 @@ static void __declspec(naked) HOOK_FixGxtCrash() {
         pop ecx
         pop edi
         pop esi
-        retn
-
-    strcmp_fix:
-        push ecx
-        push edx
-        push esi
-        push edi
-    strcmp_loop:
-        mov cl, [esi]
-        mov dl, [edi]
-        cmp cl, dl
-        jne not_equal
-        test cl, cl
-        jz equal
-        inc esi
-        inc edi
-        jmp strcmp_loop
-    equal:
-        xor eax, eax
-        jmp strcmp_done
-    not_equal:
-        mov eax, 1
-    strcmp_done:
-        pop edi
-        pop esi
-        pop edx
-        pop ecx
         retn
     }
 }
