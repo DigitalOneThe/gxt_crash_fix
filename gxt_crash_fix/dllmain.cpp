@@ -20,7 +20,6 @@ void __declspec(naked) HOOK_FixGxtCrash() {
         push ecx
 
         mov esi, ecx
-        mov text, esi
 
         test ecx, ecx
         jz invalid
