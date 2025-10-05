@@ -10,7 +10,11 @@ char* text = nullptr;
 const char* invalid_strings[] = {
     "~k~~SWITCH_DEBUG_CAM_ON~",
     "~k~~TAKE_SCREEN_SHOT~",
-    "~k~~KYEMAN~"
+    "~k~~KYEMAN~",
+    "~k~~HBTAKE_SCREEN_SHOT~",
+    "~k~~TOGGLE_DPAD~",
+    "~k~~NETWORK_TALK~",
+    "~k~~SHOW_MOUSE_POINTER_TOGGLE~"
 };
 const int NUM_INVALID_STRINGS = sizeof(invalid_strings) / sizeof(invalid_strings[0]);
 constexpr uintptr_t FixGxtCrash_Addr = 0x69DB54;
@@ -26,9 +30,7 @@ bool InitializeMinHook() {
 void __declspec(naked) HOOK_FixGxtCrash() {
     __asm {
         push esi
-        push edi
         push ecx
-        push ebx
 
         mov esi, ecx
         mov text, esi
@@ -36,16 +38,12 @@ void __declspec(naked) HOOK_FixGxtCrash() {
         test ecx, ecx
         jz invalid
 
-        pop ebx
         pop ecx
-        pop edi
         pop esi
         jmp[FixGxtCrash_t]
 
     invalid:
-        pop ebx
         pop ecx
-        pop edi
         pop esi
         retn
     }
